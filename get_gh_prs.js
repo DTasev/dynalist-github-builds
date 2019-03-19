@@ -10,6 +10,7 @@
 
 (function () {
   'use strict';
+  const YOUR_GITHUB_API_KEY = "";
   const container = document.getElementsByClassName("main-container")[0];
   const ce = document.createElement;
   is_document_ready();
@@ -37,7 +38,15 @@
         for (const link of tag.parentElement.getElementsByClassName("node-link")) {
           // if this is a link to a pull request
           if (link.href.includes("/pull/")) {
-            get(GITHUB_PR_API + link.textContent, tag, link.textContent, get_pr_statuses);
+            let last_backslash = link.href.lastIndexOf("/");
+            // check if the URL ends in a / too, if so slice it off and try again
+            if (last_backslash === link.length) {
+              last_backslash = link.href.slice(0, link.href.length - 1).lastIndexOf("/");
+              last_backslash = link.href.lastIndexOf("/");
+            }
+            // find the last /
+            const pr_id = link.href.slice(last_backslash + 1);
+            get(GITHUB_PR_API + pr_id, tag, pr_id, get_pr_statuses);
           }
         }
 
@@ -79,7 +88,7 @@
   function get(url, link_tag, pr_id, callback) {
     let request = new XMLHttpRequest();
     request.open("GET", url, true);
-    const auth_basic = window.btoa("dtasev:04d0858f8d8c23ed73700542a7c7c44ce1e4d678");
+    const auth_basic = window.btoa("dtasev:" + YOUR_GITHUB_API_KEY);
     request.setRequestHeader("Authorization", "Basic " + auth_basic);
 
     request.onreadystatechange = function () {
