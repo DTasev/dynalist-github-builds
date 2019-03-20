@@ -103,6 +103,7 @@
       status.style.backgroundColor = "mediumpurple";
       status.style.color = "black";
       status.style.display = "none";
+      status.style.marginLeft = "5px";
 
       review.style.display = "none";
       review.className = "node-link fffff";
