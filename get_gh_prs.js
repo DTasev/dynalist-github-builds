@@ -1,16 +1,18 @@
 // ==UserScript==
-// @name         New Userscript
+// @name         Dynalist Github
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @description  Append build, review, and merge statuses onto a node tagged with #prs. Runs on any Dynalist page
+// @author       Dimitar Tasev
 // @match        https://dynalist.io/*
 // @grant        none
 // ==/UserScript==
 
 (function () {
   'use strict';
-  const YOUR_GITHUB_API_KEY = "";
+  // Read the API key off the document if present. This should be declared in another TamperMonkey script
+  // that is run on document start. A template for that is the "your_api_key.js" file.
+  const YOUR_GITHUB_API_KEY = document.YOUR_GITHUB_API_KEY ? document.YOUR_GITHUB_API_KEY : "";
   const container = document.getElementsByClassName("main-container")[0];
   const GITHUB_PR_API = "https://api.github.com/repos/mantidproject/mantid/pulls/";
 
@@ -106,6 +108,7 @@
       review.className = "node-link fffff";
       review.style.backgroundColor = "chartreuse";
       review.style.color = "black";
+      review.style.marginLeft = "5px";
 
       link_tag.parentElement.appendChild(a);
       link_tag.parentElement.appendChild(review);
