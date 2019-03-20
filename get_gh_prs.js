@@ -44,9 +44,11 @@
               last_backslash = link.href.slice(0, link.href.length - 1).lastIndexOf("/");
               last_backslash = link.href.lastIndexOf("/");
             }
-            // find the last /
+            // find the last / in the URL
             const pr_id = link.href.slice(last_backslash + 1);
-            get(GITHUB_PR_API + pr_id, tag, pr_id, get_pr_statuses);
+            // make a PR data object to add more stuff to it, e.g. merged or not
+            const pr_custom_data = { id: pr_id };
+            get(GITHUB_PR_API + pr_id, tag, pr_custom_data, get_pr_statuses);
           }
         }
 
@@ -54,19 +56,30 @@
     }
   }
 
-  function get_pr_statuses(link_tag, pr_id, pr_data) {
-    get(pr_data._links.statuses.href, link_tag, pr_id, update_pr_tags);
+  function get_pr_statuses(link_tag, pr_custom_data, pr_data) {
+    pr_custom_data.merged = pr_data.merged;
+    // just get the statuses data, and callback into updating the PR tags
+    get(pr_data._links.statuses.href, link_tag, pr_custom_data, update_pr_tags);
   }
 
-  function update_pr_tags(link_tag, pr_id, status_data) {
+  function update_pr_tags(link_tag, pr_custom_data, status_data) {
     // tag status already exists, update it
     const elems = link_tag.parentElement.getElementsByClassName("fffff");
     if (elems.length > 0) {
       var a = elems[0];
+      var status = elems[0];
     } else {
       var a = document.createElement("a");
+      var status = document.createElement("a");
+
       a.className = "node-link fffff";
+      status.className = "node-link fffff";
+
+      status.style.backgroundColor = "mediumpurple";
+      status.style.color = "black";
+      status.style.display = "none";
       link_tag.parentElement.appendChild(a);
+      link_tag.parentElement.insertBefore(status, link_tag.parentElement.children[0]);
     }
 
     switch (status_data[0].state) {
@@ -84,8 +97,12 @@
     }
     a.textContent += " " + status_data[0].context;
 
+    if (pr_custom_data.merged) {
+      status.textContent = "merged";
+      status.style.display = "inline-block";
+    }
   }
-  function get(url, link_tag, pr_id, callback) {
+  function get(url, link_tag, pr_custom_data, callback) {
     let request = new XMLHttpRequest();
     request.open("GET", url, true);
     const auth_basic = window.btoa("dtasev:" + YOUR_GITHUB_API_KEY);
@@ -94,7 +111,7 @@
     request.onreadystatechange = function () {
       if (request.readyState === XMLHttpRequest.DONE) {
         if (request.status === 200) {
-          callback(link_tag, pr_id, JSON.parse(request.responseText));
+          callback(link_tag, pr_custom_data, JSON.parse(request.responseText));
         }
       }
     };
