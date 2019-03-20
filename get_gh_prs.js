@@ -91,7 +91,8 @@
     const elems = link_tag.parentElement.getElementsByClassName("fffff");
     if (elems.length > 0) {
       var a = elems[0];
-      var status = elems[0];
+      var review = elems[1];
+      var status = elems[2];
     } else {
       var a = document.createElement("a");
       var status = document.createElement("a");
