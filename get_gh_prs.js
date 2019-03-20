@@ -12,7 +12,6 @@
   'use strict';
   const YOUR_GITHUB_API_KEY = "";
   const container = document.getElementsByClassName("main-container")[0];
-  const ce = document.createElement;
   is_document_ready();
   function is_document_ready() {
     var visibleLoader = null;
@@ -33,8 +32,10 @@
   const GITHUB_PR_API = "https://api.github.com/repos/mantidproject/mantid/pulls/";
   function get_all_prs() {
     for (const tag of document.getElementsByClassName("node-tag")) {
+      // yikes, but what can you do, the structure is weird, and we want to avoid updating checked tags
+      const parent_with_checked_status = tag.parentElement.parentElement.parentElement.parentElement;
       // if this tag is to get pull request status
-      if (tag.textContent === "#prs") {
+      if (!parent_with_checked_status.className.includes("is-checked") && tag.textContent === "#prs") {
         for (const link of tag.parentElement.getElementsByClassName("node-link")) {
           // if this is a link to a pull request
           if (link.href.includes("/pull/")) {
