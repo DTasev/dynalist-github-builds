@@ -69,8 +69,9 @@
 
   function get_pr_reviews(link_tag, pr_custom_data, review_data) {
     if (review_data.length > 0) {
-      pr_custom_data.approved = review_data[0].state === "APPROVED";
-      pr_custom_data.review_user = review_data[0].user.login;
+      const latest_review = review_data.last();
+      pr_custom_data.approved = latest_review.state;
+      pr_custom_data.review_user = latest_review.user.login;
     } else {
       pr_custom_data.approved = false;
       pr_custom_data.review_user = "";
@@ -108,8 +109,6 @@
 
       review.style.display = "none";
       review.className = "node-link fffff";
-      review.style.backgroundColor = "chartreuse";
-      review.style.color = "black";
       review.style.marginLeft = "5px";
 
       link_tag.parentElement.appendChild(a);
@@ -137,9 +136,24 @@
       status.textContent = "Merged";
       status.style.display = "inline-block";
     }
-
+    switch (pr_custom_data.approved) {
+      case "APPROVED":
+        review.textContent = "✓ Approved by " + pr_custom_data.review_user;
+        review.style.backgroundColor = "chartreuse";
+        review.style.color = "black";
+        break;
+      case "CHANGES_REQUESTED":
+        review.textContent = "❌ Changes Requested by " + pr_custom_data.review_user;
+        review.style.color = "#ff9b00";
+        break;
+      case "COMMENTED":
+        review.textContent = "💬 Comment by " + pr_custom_data.review_user;
+        review.style.color = "white";
+        break;
+      default:
+        break;
+    }
     if (pr_custom_data.approved) {
-      review.textContent = "✓ Approved by " + pr_custom_data.review_user;
       review.style.display = "inline-block";
     }
   }
