@@ -144,10 +144,12 @@
         break;
       case "CHANGES_REQUESTED":
         review.textContent = "❌ Changes Requested by " + pr_custom_data.review_user;
+        review.style.backgroundColor = "#525150";
         review.style.color = "#ff9b00";
         break;
       case "COMMENTED":
         review.textContent = "💬 Comment by " + pr_custom_data.review_user;
+        review.style.backgroundColor = "#525150";
         review.style.color = "white";
         break;
       default:
